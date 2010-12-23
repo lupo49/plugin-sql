@@ -1,0 +1,7 @@
+base   sql
+author Slim Amamou
+email  slim.amamou@gmail.com
+date   2007-05-07
+name   sql plugin
+desc   Execute SQL query and display the result as a table
+url    http://dokuwiki.org/plugin:sql
