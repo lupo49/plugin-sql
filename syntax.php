@@ -25,7 +25,65 @@ function property($prop, $xml)
 	}
     return FALSE;
 }
- 
+   
+function sql__getData ($rowElement, $colElement, $dataElement, $table, $oldArray) {
+    //
+    // Returns a new array constructed from the old array and the enumeration headings
+    //
+    // Get the enumeration values for the row and column headings
+    $rowVal = sql__getEnumSetValues($table, $rowElement);
+    $colVal = sql__getEnumSetValues($table, $colElement);
+    //
+    // Start a new array and fill in the column headings
+    $newArray = array();
+    $newArray[0][1] = $rowElement;     // start with row heading
+    foreach ($colVal as $colHeader) {
+        $newArray[0][] = $colHeader;
+    }
+    $i=0;
+    $numRowsOld = count($oldArray);
+    //
+    // Fill in the row headings
+    foreach ($rowVal as $rowHeader) {
+        $i++;
+        $newArray[$i]['header'] = $rowHeader;
+        $valIndex = 0;
+        foreach ($colVal as $colHeader) {
+            $valIndex++;
+            $newArray[$i][$valIndex] = '';
+            //
+            // Fill in the data when the cells match the row and column headings 
+            foreach ($oldArray as $key => $row) {
+                if (($row[$rowElement] == $rowHeader) AND ($row[$colElement] == $colHeader)) 
+                    $newArray[$i][$valIndex] = $oldArray[$key][$dataElement];
+            }
+        }
+    }
+    return $newArray;
+}
+    
+function sql__getEnumSetValues($table, $field){
+    //
+    //Returns an array of enumeration values from the field of the table
+    //
+    // Get the enumeration values from the database
+    $query = "SHOW COLUMNS FROM `$table` LIKE '$field'";
+    $result = mysql_query($query);
+    $row = mysql_fetch_array($result);
+    //
+    // Parse out the extra text from the result 
+    if(stripos(".".$row[1],"enum(") > 0) 
+        $row[1]=str_replace("enum('","",$row[1]);
+    else 
+        $row[1]=str_replace("set('","",$row[1]);
+    $row[1]=str_replace("','","\n",$row[1]);
+    $row[1]=str_replace("')","",$row[1]);
+    $ar = explode("\n",$row[1]);
+    for ($i=0;$i<count($ar);$i++) 
+        $arOut[str_replace("''","'",$ar[$i])]=str_replace("''","'",$ar[$i]);
+    return $arOut;
+} 
+     
 /**
  * All DokuWiki plugins to extend the parser/rendering mechanism
  * need to inherit from this class
@@ -171,7 +229,7 @@ class syntax_plugin_sql extends DokuWiki_Syntax_Plugin {
 						}
 						else {
     						if ($this->my_headers == TRUE) {
-        						$result = getData($this->rowHeader, $this->colHeader, $this->theData, $this->table_name, $result);
+        						$result = sql__getData($this->rowHeader, $this->colHeader, $this->theData, $this->table_name, $result);
         						$temp = array_shift($result);
         					} else {
             					$temp = array_keys($result[0]);
@@ -241,63 +299,5 @@ class syntax_plugin_sql extends DokuWiki_Syntax_Plugin {
             return true;
         }
         return false;
-    }
-    
-    function getEnumSetValues($table, $field){
-        //
-        //Returns an array of enumeration values from the field of the table
-        //
-        // Get the enumeration values from the database
-        $query = "SHOW COLUMNS FROM `$table` LIKE '$field'";
-        $result = mysql_query($query);
-        $row = mysql_fetch_array($result);
-        //
-        // Parse out the extra text from the result 
-        if(stripos(".".$row[1],"enum(") > 0) 
-            $row[1]=str_replace("enum('","",$row[1]);
-        else 
-            $row[1]=str_replace("set('","",$row[1]);
-        $row[1]=str_replace("','","\n",$row[1]);
-        $row[1]=str_replace("')","",$row[1]);
-        $ar = explode("\n",$row[1]);
-        for ($i=0;$i<count($ar);$i++) 
-            $arOut[str_replace("''","'",$ar[$i])]=str_replace("''","'",$ar[$i]);
-        return $arOut;
-    } 
-   
-    function getData ($rowElement, $colElement, $dataElement, $table, $oldArray) {
-        //
-        // Returns a new array constructed from the old array and the enumeration headings
-        //
-        // Get the enumeration values for the row and column headings
-        $rowVal = getEnumSetValues($table, $rowElement);
-        $colVal = getEnumSetValues($table, $colElement);
-        //
-        // Start a new array and fill in the column headings
-        $newArray = array();
-        $newArray[0][1] = $rowElement;     // start with row heading
-        foreach ($colVal as $colHeader) {
-            $newArray[0][] = $colHeader;
-        }
-        $i=0;
-        $numRowsOld = count($oldArray);
-        //
-        // Fill in the row headings
-        foreach ($rowVal as $rowHeader) {
-            $i++;
-            $newArray[$i]['header'] = $rowHeader;
-            $valIndex = 0;
-            foreach ($colVal as $colHeader) {
-                $valIndex++;
-                $newArray[$i][$valIndex] = '';
-                //
-                // Fill in the data when the cells match the row and column headings 
-                foreach ($oldArray as $key => $row) {
-                    if (($row[$rowElement] == $rowHeader) AND ($row[$colElement] == $colHeader)) 
-                        $newArray[$i][$valIndex] = $oldArray[$key][$dataElement];
-                }
-            }
-        }
-        return $newArray;
     }
 }
