@@ -1,0 +1,13 @@
+<sql id='paperwaste' headers='yes' class='sortable' wikitext='disable' table='waste_total' row='year' col='type' theData='paper' db="mysql://tester:password@localhost/glocal6_data">SELECT year, type, paper FROM waste_total;</sql>
+
+<tableplot>
+&series=columns&firstSeries=1&id=paperwaste&width=800&height=300&position=after&plotArgs={
+title: {text: 'Paper Waste (thousands of tons)', fontSize: '14pt', textColor: 'blue'},
+seriesDefaults: {renderer:jQuery.jqplot.BarRenderer,rendererOptions: {fillToZero: true},useNegativeColors:false, pointLabels: { show: false, location: 'e', edgeTolerance: -15 }},
+series:[{label:'Generated',color: 'orange'},{label:'Recovered',color: 'green'},{label:'Discarded',color: 'red'}],
+legend:{renderer: jQuery.jqplot.EnhancedLegendRenderer,show: true, showSwatches: true, showLabels:true, placement:'outsideGrid', seriesToggle:true},
+axesDefaults: {tickOptions: {fontSize: '10pt'}},
+axes: {yaxis: {min:0,max:90000,tickOptions: {formatString: '%i'}}}}&
+</tableplot>
+
+{{keywords>sqlSort,table2plot}}
