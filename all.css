@@ -1,0 +1,76 @@
+/* ---------- database tables ------------------- */
+
+.sortable
+{
+  padding:         0;
+  border-collapse: collapse;
+  border:          1px solid #333;
+  font-family:     "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+  font-size:       0.9em;
+  color:           #000;
+  background:      #c3d8ec url("images/dbTable.jpg") top left repeat-x;
+  }
+
+.sortable caption
+{
+  caption-side: top;
+  font-size:    0.9em;
+  font-style:   italic;
+  text-align:   right;
+  padding:      0.5em 0;
+}
+
+.sortable th, .sortable td
+{
+  border:     1px dotted #666;
+  padding:    0.5em;
+  text-align: right;
+  color:      #632a39;
+}
+
+.sortable th[scope=col]
+{
+  color:            #000;
+  background-color: #8fadcc;
+  text-transform:   uppercase;
+  font-size:        1.0em;
+  border-bottom:    2px solid #333;
+  border-right:     2px solid #333;
+  font-weight: bold;
+  cursor: default;
+}
+
+.sortable th+th[scope=col]
+{
+  color:            #fff;
+  background-color: #7d98b3;
+  border-right:     1px dotted #666;
+}
+
+.sortable th[scope=row]
+{
+  background-color: #b8cfe5;
+  border-right:     2px solid #333;
+}
+
+.sortable tr.alt th, .sortable tr.alt td, .sortable tr.alt a 
+{
+  color: #2a4763;
+}
+
+.sortable a 
+{
+  color: #632a39;
+}
+
+.sortable tr:hover th[scope=row], .sortable tr:hover td, .sortable tr:hover a
+{
+  background-color: #2753d2;
+  color:            #fff;
+}
+.sortable tr:hover a 
+{
+    border-bottom: 1px dotted #fff; 
+}
+
+.hidden {visibility:hidden}
