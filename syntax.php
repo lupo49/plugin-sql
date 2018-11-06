@@ -14,12 +14,12 @@ require_once('DB.php');
  
 function property($prop, $xml)
 {
-	$pattern = $prop ."='([^']*)')";
-	if (ereg($pattern, $xml, $matches)) {
+	$pattern = '/'.$prop ."='([^']*)')/";
+	if (preg_match($pattern, $xml, $matches)) {
 		return $matches[1];
 	}
-	$pattern = $prop .'="([^"]*)"';
-	if (ereg($pattern, $xml, $matches)) {
+	$pattern = '/'.$prop .'="([^"]*)"/';
+	if (preg_match($pattern, $xml, $matches)) {
 		return $matches[1];
 	}
 	return FALSE;
