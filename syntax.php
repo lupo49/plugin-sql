@@ -14,12 +14,12 @@ require_once('DB.php');
  
 function property($prop, $xml)
 {
-	$pattern = $prop ."='([^']*)')";
-	if (ereg($pattern, $xml, $matches)) {
+	$pattern = '/'.$prop ."='([^']*)')/";
+	if (preg_match($pattern, $xml, $matches)) {
 		return $matches[1];
 	}
-	$pattern = $prop .'="([^"]*)"';
-	if (ereg($pattern, $xml, $matches)) {
+	$pattern = '/'.$prop .'="([^"]*)"/';
+	if (preg_match($pattern, $xml, $matches)) {
 		return $matches[1];
 	}
 	return FALSE;
@@ -115,30 +115,27 @@ class syntax_plugin_sql extends DokuWiki_Syntax_Plugin {
 				$this->vertical_position = FALSE;
 			}
 			if ($data['urn'] != "") {
-				$db =& DB::connect($data['urn']);
-				if (DB::isError($db)) {
-					$error = $db->getMessage();
-					$renderer->doc .= '<div class="error">'. $error .'</div>';
+				try {
+					$db =& DB::connect($data['urn']);
+				} catch(Exception $e) {
+					$error = $e->getMessage();
+					$renderer->doc .= '<div class="error">Plugin SQL Error '. $error .'</div>';
 					return TRUE;
 				}
-				else {
-					array_push($this->databases, $db);
-				}
+				array_push($this->databases, $db);
 			}
 			elseif (!empty($data['sql'])) {
 			    $db =& array_pop($this->databases);
 				if (!empty($db)) {
 					foreach ($data['sql'] as $query) {
 						$db->setFetchMode(DB_FETCHMODE_ASSOC);
-						$result =& $db->getAll($query);
-						if (DB::isError($result)) {
-							$error = $result->getMessage();
-							$renderer->doc .= '<div class="error">'. $error .'</div>';
+						try {
+							$result =& $db->getAll($query);
+						} catch(Exception $e) {
+							$error = $e->getMessage();
+							$renderer->doc .= '<div class="error">Plugin SQL Error '. $error .'</div>';
 							return TRUE;
 						}
-						elseif ($result == DB_OK or empty($result)) {
-						}
-						else {
 
 							if (! $this->vertical_position) {
 								if ($this->display_inline) {
@@ -168,6 +165,7 @@ class syntax_plugin_sql extends DokuWiki_Syntax_Plugin {
 										}
 										$renderer->doc .= '</td>';
 									}
+									$renderer->doc .= '</td>';
 									$renderer->doc .= '</tr>';
 								}
 								$renderer->doc .= '</tbody></table>';
@@ -189,7 +187,6 @@ class syntax_plugin_sql extends DokuWiki_Syntax_Plugin {
 									$renderer->doc .= '</tbody></table>';
 								}
 							}
-						}
 					}
 				}
 			}
